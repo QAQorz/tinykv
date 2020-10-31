@@ -68,9 +68,16 @@ func (s *StandAloneStorage) Write(ctx *kvrpcpb.Context, batch []storage.Modify) 
 		value := modify.Value()
 		cf := modify.Cf()
 		key := modify.Key()
-		err := engine_util.PutCF(s.db, cf, key, value)
-		if err != nil {
-			return err
+		if value == nil {
+			err := engine_util.DeleteCF(s.db, cf, key)
+			if err != nil {
+				return err
+			}
+		} else {
+			err := engine_util.PutCF(s.db, cf, key, value)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
